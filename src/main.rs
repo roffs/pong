@@ -17,6 +17,8 @@ fn main() {
 #[derive(Component)]
 struct Wall;
 
+pub const WALL_HEIGHT: f32 = 15.0;
+
 fn setup(mut commands: Commands, window_query: Query<&Window>) {
     // Spawn camera
     commands.spawn(Camera2dBundle::default());
@@ -24,19 +26,18 @@ fn setup(mut commands: Commands, window_query: Query<&Window>) {
     // Spawn top and bottom walls
     let window = window_query.get_single().unwrap();
 
-    let wall_height = 15.0;
     let wall_width = window.width();
 
     commands.spawn((
         SpriteBundle {
             sprite: Sprite {
                 color: Color::WHITE,
-                custom_size: Some(Vec2::new(wall_width, wall_height)),
+                custom_size: Some(Vec2::new(wall_width, WALL_HEIGHT)),
                 ..default()
             },
             transform: Transform::from_translation(Vec3::new(
                 0.,
-                (window.height() - wall_height) / 2.,
+                (window.height() - WALL_HEIGHT) / 2.,
                 0.,
             )),
             ..default()
@@ -48,12 +49,12 @@ fn setup(mut commands: Commands, window_query: Query<&Window>) {
         SpriteBundle {
             sprite: Sprite {
                 color: Color::WHITE,
-                custom_size: Some(Vec2::new(wall_width, wall_height)),
+                custom_size: Some(Vec2::new(wall_width, WALL_HEIGHT)),
                 ..default()
             },
             transform: Transform::from_translation(Vec3::new(
                 0.,
-                (-window.height() + wall_height) / 2.,
+                (-window.height() + WALL_HEIGHT) / 2.,
                 0.,
             )),
             ..default()
