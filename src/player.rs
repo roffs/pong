@@ -22,7 +22,7 @@ fn spawn_players(mut commands: Commands, window_query: Query<&Window>) {
     commands.spawn((
         SpriteBundle {
             sprite: Sprite {
-                color: Color::rgb(1.0, 1.0, 1.0),
+                color: Color::WHITE,
                 custom_size: Some(Vec2::new(player_width, player_height)),
                 ..default()
             },
@@ -39,7 +39,7 @@ fn spawn_players(mut commands: Commands, window_query: Query<&Window>) {
     commands.spawn((
         SpriteBundle {
             sprite: Sprite {
-                color: Color::rgb(1.0, 1.0, 1.0),
+                color: Color::WHITE,
                 custom_size: Some(Vec2::new(player_width, player_height)),
                 ..default()
             },

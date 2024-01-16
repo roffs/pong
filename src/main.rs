@@ -1,5 +1,7 @@
+mod ball;
 mod player;
 
+use ball::BallPlugin;
 use bevy::prelude::*;
 use player::PlayerPlugin;
 
@@ -7,7 +9,7 @@ fn main() {
     App::new()
         .insert_resource(ClearColor(Color::rgb(0.3647, 0.6627, 0.9607)))
         .add_plugins(DefaultPlugins)
-        .add_plugins(PlayerPlugin)
+        .add_plugins((PlayerPlugin, BallPlugin))
         .add_systems(Startup, setup)
         .run();
 }
@@ -28,7 +30,7 @@ fn setup(mut commands: Commands, window_query: Query<&Window>) {
     commands.spawn((
         SpriteBundle {
             sprite: Sprite {
-                color: Color::rgb(1.0, 1.0, 1.0),
+                color: Color::WHITE,
                 custom_size: Some(Vec2::new(wall_width, wall_height)),
                 ..default()
             },
@@ -45,7 +47,7 @@ fn setup(mut commands: Commands, window_query: Query<&Window>) {
     commands.spawn((
         SpriteBundle {
             sprite: Sprite {
-                color: Color::rgb(1.0, 1.0, 1.0),
+                color: Color::WHITE,
                 custom_size: Some(Vec2::new(wall_width, wall_height)),
                 ..default()
             },
