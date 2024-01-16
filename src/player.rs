@@ -4,7 +4,8 @@ pub struct PlayerPlugin;
 
 impl Plugin for PlayerPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(Startup, spawn_players);
+        app.add_systems(Startup, spawn_players)
+            .add_systems(Update, move_players);
     }
 }
 
@@ -52,4 +53,21 @@ fn spawn_players(mut commands: Commands, window_query: Query<&Window>) {
         },
         Player,
     ));
+}
+
+const PLAYER_SPEED: f32 = 500.0;
+fn move_players(
+    mut players_query: Query<&mut Transform, With<Player>>,
+    input: Res<Input<KeyCode>>,
+    time: Res<Time>,
+) {
+    for mut transform in players_query.iter_mut() {
+        if input.pressed(KeyCode::W) {
+            transform.translation += Vec3::Y * PLAYER_SPEED * time.delta_seconds()
+        }
+
+        if input.pressed(KeyCode::S) {
+            transform.translation -= Vec3::Y * PLAYER_SPEED * time.delta_seconds()
+        }
+    }
 }
