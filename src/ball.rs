@@ -1,14 +1,23 @@
 use bevy::{prelude::*, sprite::MaterialMesh2dBundle};
 use rand::random;
 
-use crate::{Wall, WALL_HEIGHT};
+use crate::{
+    player::{Player, PLAYER_HEIGHT, PLAYER_WIDTH},
+    WALL_HEIGHT,
+};
 
 pub struct BallPlugin;
 
 impl Plugin for BallPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(Startup, spawn_ball)
-            .add_systems(Update, (update_ball_position, bounce_ball_on_walls));
+        app.add_systems(Startup, spawn_ball).add_systems(
+            Update,
+            (
+                update_ball_position,
+                bounce_ball_on_walls,
+                bounce_ball_on_players,
+            ),
+        );
     }
 }
 
@@ -34,7 +43,7 @@ pub fn spawn_ball(
         },
         Ball {
             direction: Vec3::new(random(), random(), 0.0).normalize(),
-            speed: 200.0,
+            speed: 400.0,
         },
     ));
 }
@@ -57,6 +66,28 @@ fn bounce_ball_on_walls(
 
         if transform.translation.y > max_y || transform.translation.y < min_y {
             ball.direction.y *= -1.0;
+        }
+    }
+}
+
+fn bounce_ball_on_players(
+    mut ball_query: Query<(&Transform, &mut Ball)>,
+    player_query: Query<&Transform, With<Player>>,
+) {
+    if let Ok((ball_transform, mut ball)) = ball_query.get_single_mut() {
+        for player_transform in player_query.into_iter() {
+            let horizontal_collision_check =
+                (player_transform.translation.x - ball_transform.translation.x).abs()
+                    < PLAYER_WIDTH / 2.0 + BALL_RADIUS;
+
+            let vertical_collision_check =
+                (player_transform.translation.y - ball_transform.translation.y).abs()
+                    < PLAYER_HEIGHT / 2.0 + BALL_RADIUS;
+
+            if horizontal_collision_check && vertical_collision_check {
+                ball.direction.x *= -1.0;
+                ball.speed += 15.0;
+            }
         }
     }
 }

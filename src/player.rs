@@ -12,10 +12,10 @@ impl Plugin for PlayerPlugin {
 }
 
 #[derive(Component)]
-struct Player;
+pub struct Player;
 
-const PLAYER_HEIGHT: f32 = 150.0;
-const PLAYER_WIDTH: f32 = 15.0;
+pub const PLAYER_HEIGHT: f32 = 150.0;
+pub const PLAYER_WIDTH: f32 = 15.0;
 
 fn spawn_players(mut commands: Commands, window_query: Query<&Window>) {
     let window = window_query.get_single().unwrap();
