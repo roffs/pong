@@ -6,13 +6,18 @@ pub struct PlayerPlugin;
 
 impl Plugin for PlayerPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(Startup, spawn_players)
-            .add_systems(Update, (move_players, confine_players).chain());
+        app.add_systems(Startup, spawn_players).add_systems(
+            Update,
+            (move_player1, move_player2, confine_players).chain(),
+        );
     }
 }
 
 #[derive(Component)]
-pub struct Player;
+pub struct Player1;
+
+#[derive(Component)]
+pub struct Player2;
 
 pub const PLAYER_HEIGHT: f32 = 150.0;
 pub const PLAYER_WIDTH: f32 = 15.0;
@@ -36,7 +41,7 @@ fn spawn_players(mut commands: Commands, window_query: Query<&Window>) {
             )),
             ..default()
         },
-        Player,
+        Player1,
     ));
 
     commands.spawn((
@@ -53,17 +58,17 @@ fn spawn_players(mut commands: Commands, window_query: Query<&Window>) {
             )),
             ..default()
         },
-        Player,
+        Player2,
     ));
 }
 
 const PLAYER_SPEED: f32 = 500.0;
-fn move_players(
-    mut players_query: Query<&mut Transform, With<Player>>,
+fn move_player1(
+    mut player_query: Query<&mut Transform, With<Player1>>,
     input: Res<Input<KeyCode>>,
     time: Res<Time>,
 ) {
-    for mut transform in players_query.iter_mut() {
+    if let Ok(mut transform) = player_query.get_single_mut() {
         if input.pressed(KeyCode::W) {
             transform.translation += Vec3::Y * PLAYER_SPEED * time.delta_seconds()
         }
@@ -74,8 +79,24 @@ fn move_players(
     }
 }
 
+fn move_player2(
+    mut player_query: Query<&mut Transform, With<Player2>>,
+    input: Res<Input<KeyCode>>,
+    time: Res<Time>,
+) {
+    if let Ok(mut transform) = player_query.get_single_mut() {
+        if input.pressed(KeyCode::Up) {
+            transform.translation += Vec3::Y * PLAYER_SPEED * time.delta_seconds()
+        }
+
+        if input.pressed(KeyCode::Down) {
+            transform.translation -= Vec3::Y * PLAYER_SPEED * time.delta_seconds()
+        }
+    }
+}
+
 fn confine_players(
-    mut players_query: Query<&mut Transform, With<Player>>,
+    mut players_query: Query<&mut Transform, AnyOf<(&Player1, &Player2)>>,
     window_query: Query<&Window>,
 ) {
     let window = window_query.get_single().unwrap();

@@ -2,7 +2,7 @@ use bevy::{prelude::*, sprite::MaterialMesh2dBundle};
 use rand::random;
 
 use crate::{
-    player::{Player, PLAYER_HEIGHT, PLAYER_WIDTH},
+    player::{Player1, Player2, PLAYER_HEIGHT, PLAYER_WIDTH},
     WALL_HEIGHT,
 };
 
@@ -72,7 +72,7 @@ fn bounce_ball_on_walls(
 
 fn bounce_ball_on_players(
     mut ball_query: Query<(&Transform, &mut Ball)>,
-    player_query: Query<&Transform, With<Player>>,
+    player_query: Query<&Transform, AnyOf<(&Player1, &Player2)>>,
 ) {
     if let Ok((ball_transform, mut ball)) = ball_query.get_single_mut() {
         for player_transform in player_query.into_iter() {
