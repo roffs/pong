@@ -15,7 +15,8 @@ impl Plugin for BallPlugin {
             (
                 update_ball_position,
                 bounce_ball_on_walls,
-                bounce_ball_on_players,
+                bounce_ball_on_player1,
+                bounce_ball_on_player2,
             ),
         );
     }
@@ -26,8 +27,18 @@ pub struct Ball {
     direction: Vec3,
     speed: f32,
 }
+pub const BALL_RADIUS: f32 = 15.0;
+pub const BALL_SPEED: f32 = 400.0;
 
-const BALL_RADIUS: f32 = 15.0;
+impl Ball {
+    pub fn new() -> Self {
+        let direction = Vec3::new(random(), random(), 0.0).normalize();
+        Ball {
+            direction,
+            speed: BALL_SPEED,
+        }
+    }
+}
 
 pub fn spawn_ball(
     mut commands: Commands,
@@ -41,10 +52,7 @@ pub fn spawn_ball(
             transform: Transform::from_translation(Vec3::new(0., 0., 0.)),
             ..default()
         },
-        Ball {
-            direction: Vec3::new(random(), random(), 0.0).normalize(),
-            speed: 400.0,
-        },
+        Ball::new(),
     ));
 }
 
@@ -70,7 +78,31 @@ fn bounce_ball_on_walls(
     }
 }
 
-fn bounce_ball_on_players(
+fn bounce_ball_on_player1(
+    mut ball_query: Query<(&Transform, &mut Ball)>,
+    player_query: Query<&Transform, With<Player1>>,
+) {
+    if let Ok((ball_transform, mut ball)) = ball_query.get_single_mut() {
+        if let Ok(player_transform) = player_query.get_single() {
+            {
+                let horizontal_collision_check =
+                    (player_transform.translation.x - ball_transform.translation.x).abs()
+                        < PLAYER_WIDTH / 2.0 + BALL_RADIUS;
+
+                let vertical_collision_check =
+                    (player_transform.translation.y - ball_transform.translation.y).abs()
+                        < PLAYER_HEIGHT / 2.0 + BALL_RADIUS;
+
+                if horizontal_collision_check && vertical_collision_check {
+                    ball.direction.x *= -1.0;
+                    ball.speed += 15.0;
+                }
+            }
+        }
+    }
+}
+
+fn bounce_ball_on_player2(
     mut ball_query: Query<(&Transform, &mut Ball)>,
     player_query: Query<&Transform, AnyOf<(&Player1, &Player2)>>,
 ) {

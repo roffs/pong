@@ -1,15 +1,17 @@
 mod ball;
 mod player;
+mod score;
 
 use ball::BallPlugin;
 use bevy::prelude::*;
 use player::PlayerPlugin;
+use score::ScorePlugin;
 
 fn main() {
     App::new()
         .insert_resource(ClearColor(Color::rgb(0.3647, 0.6627, 0.9607)))
         .add_plugins(DefaultPlugins)
-        .add_plugins((PlayerPlugin, BallPlugin))
+        .add_plugins((PlayerPlugin, BallPlugin, ScorePlugin))
         .add_systems(Startup, setup)
         .run();
 }
